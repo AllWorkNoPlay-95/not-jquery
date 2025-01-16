@@ -4,7 +4,7 @@
   "description": "A lightweight JavaScript library that emulates essential jQuery functions, designed for WordPress themes and plugins without relying on the full jQuery library.",
   "main": "dist/not-jquery.min.js",
   "scripts": {
-    "build": "gulp build",
+    "build": "gulp",
     "watch": "gulp watch"
   },
   "repository": {

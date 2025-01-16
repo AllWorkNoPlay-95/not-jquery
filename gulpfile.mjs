@@ -1,4 +1,4 @@
-import { src, dest, series, parallel, watch } from "gulp";
+import { src, dest, series, parallel, watch as watcher } from "gulp";
 import ts from "gulp-typescript";
 import terser from "gulp-terser";
 import prettier from "gulp-prettier";
@@ -38,11 +38,11 @@ function reformat() {
     .pipe(dest("./"));
 }
 
-function watchAll() {
+function watch() {
   // watch(paths.pretty, reformat); //It's better to use the IDE's format on save (for me at least)
-  watch(paths.scripts.src, series(compileTs, minifyJs));
+  watcher(paths.scripts.src, series(compileTs, minifyJs));
 }
 
 export default series(reformat, compileTs, minifyJs);
 
-export { compileTs, minifyJs, reformat, watchAll };
+export { compileTs, minifyJs, reformat, watch };
