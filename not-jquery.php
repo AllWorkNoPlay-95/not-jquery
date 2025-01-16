@@ -24,7 +24,7 @@ function enqueue_fe(): void
 {
     wp_enqueue_script(
         "mncs-not-jquery",
-        plugin_dir_url() . "/dist/not-jquery.js",
+        plugin_dir_url(__FILE__) . "/dist/not-jquery.js",
         [],
         "1.0.0",
         true
