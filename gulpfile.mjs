@@ -2,6 +2,7 @@ import { src, dest, series, parallel, watch as watcher } from "gulp";
 import ts from "gulp-typescript";
 import terser from "gulp-terser";
 import prettier from "gulp-prettier";
+import sourcemaps from "gulp-sourcemaps";
 
 // Load TypeScript configuration
 const tsProject = ts.createProject("tsconfig.json");
@@ -22,13 +23,10 @@ const paths = {
 function compileTs() {
   return tsProject
     .src()
+    .pipe(sourcemaps.init())
     .pipe(tsProject())
-    .pipe(dest(paths.scripts.dest));
-}
-
-function minifyJs() {
-  return src(`${paths.scripts.dest}/**/*.js`)
     .pipe(terser())
+    .pipe(sourcemaps.write("."))
     .pipe(dest(paths.scripts.dest));
 }
 
@@ -40,9 +38,9 @@ function reformat() {
 
 function watch() {
   // watch(paths.pretty, reformat); //It's better to use the IDE's format on save (for me at least)
-  watcher(paths.scripts.src, series(compileTs, minifyJs));
+  watcher(paths.scripts.src, compileTs);
 }
 
-export default series(reformat, compileTs, minifyJs);
+export default series(reformat, compileTs);
 
-export { compileTs, minifyJs, reformat, watch };
+export { compileTs, reformat, watch };
