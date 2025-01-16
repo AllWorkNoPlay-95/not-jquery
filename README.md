@@ -1,5 +1,7 @@
 # not-jquery
-A lightweight JavaScript library that emulates essential jQuery functions, designed for modern web projects and WordPress themes without relying on the full jQuery library.
+
+A lightweight JavaScript library that emulates essential jQuery functions, designed for modern web projects and
+WordPress themes without relying on the full jQuery library.
 
 ## Features
 
@@ -15,6 +17,7 @@ A lightweight JavaScript library that emulates essential jQuery functions, desig
 ## Why Use not-jquery?
 
 WordPress often includes jQuery by default, even for small operations. **not-jquery** allows you to:
+
 - Avoid loading the full jQuery library.
 - Use lightweight and optimized JavaScript to handle common DOM operations.
 - Ensure compatibility with older WordPress plugins or themes that require jQuery-like functions.
@@ -36,16 +39,38 @@ WordPress often includes jQuery by default, even for small operations. **not-jqu
    }
    add_action('wp_enqueue_scripts', 'load_not_jquery');
    ```
+
 ## Usage
 
    ```js
-        $(document).ready(function () {
-            $('.my-class').addClass('new-class');
-            $('#my-id').on('click', function () {
-                console.log('Button clicked!');
-            });
-        });
+        $(document).ready(function() {
+  $('.my-class').addClass('new-class');
+  $('#my-id').on('click', function() {
+    console.log('Button clicked!');
+  });
+});
    ```
+
 ## Licence
 
 This project is licensed under the GPLv3 License. See the LICENSE file for details.
+
+---
+
+### Conclusion (For recruiters)
+
+This script, intentionally made public on GitHub, demonstrates the implementation of a lightweight, modular JavaScript
+library designed to emulate essential jQuery functions for WordPress themes and plugins. The project showcases several
+key technical skills:
+
+- **TypeScript Integration**: The source code is written in TypeScript, leveraging its static typing to ensure code
+  robustness and minimize runtime errors.
+- **Build Automation**: A custom Gulp workflow handles tasks like TypeScript compilation, JavaScript minification, and
+  code formatting, ensuring a streamlined development process.
+- **Cross-Environment Compatibility**: Deployment scripts utilize `dotenv-run-script` to securely manage environment
+  variables for flexible, platform-independent deployment.
+- **Performance Optimization**: The library excludes unnecessary dependencies, providing a minimal footprint while
+  maintaining functionality for modern WordPress projects.
+
+The structure, use of modern development tools, and adherence to best practices in JavaScript development highlight a
+solid understanding of maintainable and efficient web development workflows.
