@@ -16,7 +16,7 @@ defined("ABSPATH") or die();
 const OPTION_GROUP = "mncs_not_jquery_settings";
 #endregion
 #region Admin
-require_once plugin_dir_path(__FILE__) . "admin/settings.php";
+require_once plugin_dir_path(__FILE__) . "wp-admin/settings.php";
 #endregion
 
 #region Main
@@ -24,7 +24,7 @@ function enqueue_fe(): void
 {
     wp_enqueue_script(
         "mncs-not-jquery",
-        get_template_directory_uri() . "/js/not-jquery.min.js",
+        plugin_dir_url() . "/dist/not-jquery.js",
         [],
         "1.0.0",
         true
