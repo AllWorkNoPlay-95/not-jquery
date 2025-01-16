@@ -24,10 +24,10 @@ function enqueue_fe(): void
 {
     wp_enqueue_script(
         "mncs-not-jquery",
-        plugin_dir_url(__FILE__) . "/dist/not-jquery.js",
+        plugin_dir_url(__FILE__) . "dist/not-jquery.js",
         [],
         "1.0.0",
-        true
+        false // There are some inline scripts that use jQuery
     );
 }
 
@@ -36,6 +36,9 @@ add_action("wp_enqueue_scripts", __NAMESPACE__ . '\enqueue_fe');
 function prune(): void
 {
     if (!is_admin()) {
+        // Add ghost jQuery scripts to make dependent scripts load
+        wp_enqueue_script("jquery", "");
+        wp_enqueue_script("jquery-core", "");
         // Only run on the frontend
         if (get_option(OPTION_GROUP . "_dequeue_jquery") == 1) {
             wp_deregister_script("jquery");
