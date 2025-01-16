@@ -1,7 +1,7 @@
 <?php
 /**
  * @package not-jquery
- * @author Samuele Mancuso
+ * @author Samuele Mancuso (AllWorkNoPlay-95 @ GitHub)
  * @link https://github.com/AllWorkNoPlay-95/not-jquery
  * @description A lightweight JavaScript library that emulates essential jQuery functions, designed for WordPress themes and plugins without relying on the full jQuery library.
  */
