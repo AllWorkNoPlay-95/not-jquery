@@ -1,5 +1,5 @@
 class NotJQuery {
-  elements: NodeListOf<Element> | Array<Window> | Array<Document> | any;
+  elements: NodeListOf<Element> | Array<Window | Document> | any;
 
   constructor(selector: string | Element | Window | Document) {
     this.elements = null;
@@ -14,7 +14,7 @@ class NotJQuery {
     console.log("Elements: ", this.elements);
   }
 
-  public assertElement(element?: any, action?: string): boolean {
+  private assertElement(element?: any, action?: string): boolean {
     let length = 0;
 
     if (!element) element = this.elements;
@@ -26,7 +26,7 @@ class NotJQuery {
     for (let i = 0, len = length; i < len; i++) {
       if (!(element instanceof Element)) {
         console.warn(
-          `Cannot ${action || "do that"}, ${typeof element} (${element}) is not supported!`,
+          `Cannot ${action && "()" || "do that"}, ${typeof element} (${element}) is not supported!`
         );
         return false;
       }
@@ -36,26 +36,22 @@ class NotJQuery {
 
   //region Emulations
   public addClass(className: string): NotJQuery {
-    if (!this.assertElement()) return this;
-    this.elements.forEach((el: Element) => {
-      if (this.assertElement(el)) {
-        el.classList.add(className);
-      } else
-        console.warn(
-          `Cannot add class '${className}', ${typeof el} (${el}) is not supported`,
-        );
-    });
+    for (let i = 0, len = this.elements.length; i < len; i++) {
+      let el = this.elements[i];
+      if (!this.assertElement(el, "addClass")) continue;
+      el.classList.add(className);
+    }
     return this;
   }
 
   public removeClass(className: string): NotJQuery {
-    if (!this.assertElement()) return this;
+    if (!this.assertElement(null, "removeClass")) return this;
     this.elements.forEach((el: Element) => el.classList.remove(className));
     return this;
   }
 
   public html(htmlContent?: string): string | NotJQuery {
-    if (!this.assertElement()) return this;
+    if (!this.assertElement(null, "html")) return this;
     if (htmlContent === undefined) {
       return this.elements[0]?.innerHTML || "";
     }
@@ -63,26 +59,60 @@ class NotJQuery {
     return this;
   }
 
+  public find(selector: string): NotJQuery {
+    if (!this.assertElement(null, "find")) return this;
+    const foundElements: Element[] = [];
+    this.elements.forEach((el: Element) => {
+      const children = el.querySelectorAll(selector);
+      foundElements.push(...children);
+    });
+
+    const instance = new NotJQuery(null as any); // Create a new instance
+    (instance as any).elements = foundElements; // Assign found elements
+    return instance;
+  }
+
   public val(value?: string): string | NotJQuery {
-    if (!this.assertElement()) return this;
+    if (!this.assertElement(null, "val")) return this;
     if (value === undefined) {
       return (this.elements[0] as HTMLInputElement)?.value || "";
     }
     this.elements.forEach(
-      (el: Element) => ((el as HTMLInputElement).value = value),
+      (el: Element) => ((el as HTMLInputElement).value = value)
     );
     return this;
   }
 
   public on(event: string, handler: EventListener): NotJQuery {
-    console.log(this.elements);
+    // No assert?
     this.elements.forEach((el: Element | Window) =>
-      el.addEventListener(event, handler),
+      el.addEventListener(event, handler)
     );
     return this;
   }
 
-  private get_width_or_height(toGet: "width" | "height"): number | null {
+  public off(event: string, handler: EventListener): NotJQuery {
+    for (let i = 0, len = this.elements.length; i < len; i++) {
+      const el = this.elements[i];
+      if (el instanceof Element || el === window || el === document) { //Manual assertion
+        if (event) {
+          if (handler) {
+            // Remove a specific handler for a specific event
+            el.removeEventListener(event, handler);
+          } else {
+            // Remove all handlers for a specific event
+            const clone = el.cloneNode(true) as Element;
+            el.parentNode?.replaceChild(clone, el);
+          }
+        } else {
+          console.warn("You must specify an event type when calling .off().");
+        }
+      }
+    }
+    return this;
+  }
+
+  private _get_width_or_height(toGet: "width" | "height"): number | null {
     const el = this.elements[0];
     if (el === window) {
       return toGet === "width" ? window.innerWidth : window.innerHeight;
@@ -94,11 +124,11 @@ class NotJQuery {
   }
 
   public width(): number | null {
-    return this.get_width_or_height("width");
+    return this._get_width_or_height("width");
   }
 
   public height(): number | null {
-    return this.get_width_or_height("height");
+    return this._get_width_or_height("height");
   }
 
   public ready(callback: () => void): void {
@@ -110,7 +140,7 @@ class NotJQuery {
         callback();
       }
     } else {
-      console.warn("ready() is only available on the document object.");
+      console.warn("ready() is only available on the document object."); // I'm not sure about that
     }
   }
 
@@ -124,11 +154,11 @@ const ProxyNotJQuery = (selector: string | Element | Window) => {
   return new Proxy(instance, {
     get(target, prop) {
       return Reflect.get(target, prop);
-    },
+    }
   });
 };
 
 // Export as $ to be used as jQuery
 // TODO: Verify if we should export jQuery too
 (window as any).$ = ProxyNotJQuery;
-(window as any).jQuery = ProxyNotJQuery;
+(window as any).jQuery = (window as any).$;
