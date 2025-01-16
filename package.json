@@ -5,7 +5,9 @@
   "main": "dist/not-jquery.min.js",
   "scripts": {
     "build": "gulp",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "deploy-dev-win": "x-env wsl rsync $(pwd)/ -rv --checksum $DEV_SSH_USERNAME@$DEV_SSH_IP:$DEV_SSH_PATH --delete $RSYNC_EXCLUDE_STRING",
+    "deploy-prod-win": "x-env wsl rsync $(pwd)/ -rv --checksum $PROD_SSH_USERNAME@$PROD_SSH_IP:$PROD_SSH_PATH --delete $RSYNC_EXCLUDE_STRING"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "gulp-prettier": "^6.0.0",
     "gulp-terser": "^2.1.0",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "x-var": "^2.0.1"
   }
 }
