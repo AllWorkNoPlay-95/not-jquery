@@ -1,8 +1,12 @@
-class NotJQuery {
-  elements: NodeListOf<Element> | Array<Window | Document> | any;
+type Selector = NodeListOf<Element> | Element | Window | Document | HTMLDivElement | string;
+type JElement = Omit<Selector, string> | null;
 
-  constructor(selector: string | Element | Window | Document) {
-    this.elements = null;
+class NotJQuery {
+
+  elements: JElement;
+
+  constructor(selector: Selector) {
+    this.elements = [];
     if (selector === window || selector === document) {
       // Handle the window object explicitly
       this.elements = [selector];
@@ -11,7 +15,6 @@ class NotJQuery {
     } else {
       console.error(`Element ${selector} not compatible!`);
     }
-    console.log("Elements: ", this.elements);
   }
 
   private assertElement(element?: any, action?: string): boolean {
@@ -26,7 +29,7 @@ class NotJQuery {
     for (let i = 0, len = length; i < len; i++) {
       if (!(element instanceof Element)) {
         console.warn(
-          `Cannot ${action && "()" || "do that"}, ${typeof element} (${element}) is not supported!`
+          `Cannot do ${action || "that"}, ${typeof element} (${element}) is not supported!`
         );
         return false;
       }
@@ -36,9 +39,11 @@ class NotJQuery {
 
   //region Emulations
   public addClass(className: string): NotJQuery {
-    for (let i = 0, len = this.elements.length; i < len; i++) {
-      let el = this.elements[i];
-      if (!this.assertElement(el, "addClass")) continue;
+    if (!this.elements) return this;
+    let theseEl = this.elements as NodeListOf<Element>;
+    for (let i = 0, len = theseEl.length; i < len; i++) {
+      let el = theseEl[i];
+      if (!this.assertElement(theseEl[i], "addClass")) continue;
       el.classList.add(className);
     }
     return this;
@@ -46,25 +51,28 @@ class NotJQuery {
 
   public removeClass(className: string): NotJQuery {
     if (!this.assertElement(null, "removeClass")) return this;
-    this.elements.forEach((el: Element) => el.classList.remove(className));
+    let theseEl = this.elements as NodeListOf<Element>;
+    theseEl.forEach((el: Element) => el.classList.remove(className));
     return this;
   }
 
-  public html(htmlContent?: string): string | NotJQuery {
-    if (!this.assertElement(null, "html")) return this;
-    if (htmlContent === undefined) {
-      return this.elements[0]?.innerHTML || "";
-    }
-    this.elements.forEach((el: Element) => (el.innerHTML = htmlContent));
-    return this;
-  }
+  // public html(htmlContent?: string): string | NotJQuery { //Not needed?
+  //   if (!this.assertElement(null, "html")) return this;
+  //   if (htmlContent === undefined) {
+  //     return this.elements[0]?.innerHTML || "";
+  //   }
+  //   this.elements.forEach((el: Element) => (el.innerHTML = htmlContent));
+  //   return this;
+  // }
 
   public find(selector: string): NotJQuery {
     if (!this.assertElement(null, "find")) return this;
-    const foundElements: Element[] = [];
-    this.elements.forEach((el: Element) => {
+    let theseEl = this.elements as NodeListOf<Element>;
+    let foundElements: Element[] = [];
+
+    theseEl.forEach((el: Element) => {
       const children = el.querySelectorAll(selector);
-      foundElements.push(...children);
+      foundElements.push(...Array.from(children));
     });
 
     const instance = new NotJQuery(null as any); // Create a new instance
@@ -75,9 +83,10 @@ class NotJQuery {
   public val(value?: string): string | NotJQuery {
     if (!this.assertElement(null, "val")) return this;
     if (value === undefined) {
-      return (this.elements[0] as HTMLInputElement)?.value || "";
+      const el = this.elements[0 as keyof typeof this.elements] as HTMLInputElement;
+      return (this.elements[0 as keyof typeof this.elements] as HTMLInputElement)?.value || "";
     }
-    this.elements.forEach(
+    (this.elements as Element[]).forEach(
       (el: Element) => ((el as HTMLInputElement).value = value)
     );
     return this;
@@ -85,16 +94,17 @@ class NotJQuery {
 
   public on(event: string, handler: EventListener): NotJQuery {
     // No assert?
-    this.elements.forEach((el: Element | Window) =>
+    (this.elements as Element[]).forEach((el: Element | Window) =>
       el.addEventListener(event, handler)
     );
     return this;
   }
 
   public off(event: string, handler: EventListener): NotJQuery {
-    for (let i = 0, len = this.elements.length; i < len; i++) {
-      const el = this.elements[i];
-      if (el instanceof Element || el === window || el === document) { //Manual assertion
+    for (let i = 0, len = (this.elements as Element[]).length; i < len; i++) {
+      const el = this.elements[i as keyof typeof this.elements] as any;
+      if (el instanceof Element || el === window || el === document) {
+        //Manual assertion
         if (event) {
           if (handler) {
             // Remove a specific handler for a specific event
@@ -113,7 +123,7 @@ class NotJQuery {
   }
 
   private _get_width_or_height(toGet: "width" | "height"): number | null {
-    const el = this.elements[0];
+    const el = this.elements[0 as keyof typeof this.elements] as JElement;
     if (el === window) {
       return toGet === "width" ? window.innerWidth : window.innerHeight;
     } else if (el instanceof Element) {
@@ -132,7 +142,7 @@ class NotJQuery {
   }
 
   public ready(callback: () => void): void {
-    if (this.elements[0] === document) {
+    if (this.elements[0 as keyof typeof this.elements] === document) {
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", callback);
       } else {
