@@ -36,11 +36,13 @@ add_action("wp_enqueue_scripts", __NAMESPACE__ . '\enqueue_fe');
 function prune(): void
 {
     if (!is_admin()) {
-        // Add ghost jQuery scripts to make dependent scripts load
-        wp_enqueue_script("jquery", "");
-        wp_enqueue_script("jquery-core", "");
-        // Only run on the frontend
         if (get_option(OPTION_GROUP . "_dequeue_jquery") == 1) {
+            if (get_option(OPTION_GROUP . "_ghost_jquery") == 1) {
+                // Add ghost jQuery scripts to make dependent scripts load
+                wp_enqueue_script("jquery", "");
+                wp_enqueue_script("jquery-core", "");
+            }
+            // Only run on the frontend
             wp_deregister_script("jquery");
             wp_deregister_script("jquery-core");
         }
