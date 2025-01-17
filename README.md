@@ -67,7 +67,7 @@ key technical skills:
   robustness and minimize runtime errors.
 - **Build Automation**: A custom Gulp workflow handles tasks like TypeScript compilation, JavaScript minification, and
   code formatting, ensuring a streamlined development process.
-- **Cross-Environment Compatibility**: Deployment scripts utilize `dotenv-run-script` to securely manage environment
+- **Cross-Environment Compatibility**: Deployment scripts utilize `x-var` to securely manage environment
   variables for flexible, platform-independent deployment.
 - **Performance Optimization**: The library excludes unnecessary dependencies, providing a minimal footprint while
   maintaining functionality for modern WordPress projects.
