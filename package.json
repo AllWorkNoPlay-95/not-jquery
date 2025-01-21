@@ -8,8 +8,8 @@
     "watch": "gulp watch",
     "deploy-dev-win": "gulp && x-env wsl rsync $(pwd)/ -rv --checksum $DEV_SSH_USERNAME@$DEV_SSH_IP:$DEV_SSH_PATH --delete $RSYNC_EXCLUDE_STRING",
     "deploy-prod-win": "gulp && x-env wsl rsync $(pwd)/ -rv --checksum $PROD_SSH_USERNAME@$PROD_SSH_IP:$PROD_SSH_PATH --delete $RSYNC_EXCLUDE_STRING",
-    "deploy-dev-unix": "gulp & x-env rsync $(pwd)/ -rv --checksum $DEV_SSH_USERNAME@$DEV_SSH_IP:$DEV_SSH_PATH --delete $RSYNC_EXCLUDE_STRING",
-    "deploy-prod-unix": "gulp &x-env rsync $(pwd)/ -rv --checksum $PROD_SSH_USERNAME@$PROD_SSH_IP:$PROD_SSH_PATH --delete $RSYNC_EXCLUDE_STRING"
+    "deploy-dev-unix": "gulp & x-env rsync $(pwd)/ -rv --checksum \\$DEV_SSH_USERNAME@\\$DEV_SSH_IP:\\$DEV_SSH_PATH --delete \\$RSYNC_EXCLUDE_STRING",
+    "deploy-prod-unix": "gulp & x-env rsync $(pwd)/ -rv --checksum \\$PROD_SSH_USERNAME@\\$PROD_SSH_IP:\\$PROD_SSH_PATH --delete \\$RSYNC_EXCLUDE_STRING"
   },
   "repository": {
     "type": "git",
